@@ -16,24 +16,34 @@ def listen(clientsocket):
         data = clientsocket.recv(1024).decode()
         print (data)
 
+def send():
+    while True:
+        str = input()
+        name = str.split('>')[0]
+        message = str.split('>')[1]
+        clients[name].send(message.encode())
+
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host = input("Inter host IP : ")
 port = input("Inter port : ")
-print (host)
-print (port)
-input()
 serversocket.bind((str(host), int(port)))
 
 serversocket.listen(5)
 print ('server started and listening')
+print('-------------------')
 
 # (clientsocket, address) = serversocket.accept()
+clients = dict()
 tr = []
+
+sender = threading.Thread(target = send)
+sender.start()
 
 while 1:
     (clientsocket, address) = serversocket.accept()
-    #print ("connection found!")
-    # data = clientsocket.recv(1024).decode()
+    data = clientsocket.recv(1024).decode()
+    print (data)
+    clients[data.split(' ')[0]] = clientsocket
     processThread = threading.Thread(target = listen, args = (clientsocket,))
     tr.append(processThread)
     processThread.start()

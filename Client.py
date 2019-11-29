@@ -8,24 +8,6 @@ port = input("port of server : ")
 name = input("your name : ")
 
 s.connect((str(host),int(port)))
-<<<<<<< HEAD
-s.send("Ali connected".encode())
-#s.close();
-messag=""
-def ts(str):
-   str='Ali > ' + messag
-   s.send(str.encode()) 
-   data = ''
-   #data = s.recv(1024).decode()
-while 2:
-   messag = input()
-   #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-   #host ="localhost"
-   #port =8000
-   #s.connect((host,port))
-   ts(s)
-   #s.close ()
-=======
 s.send((name + " connected").encode())
 
 messag=""
@@ -50,5 +32,4 @@ receiveThread.start()
 while True:
     pass
 
->>>>>>> refs/remotes/origin/master
 s.close()

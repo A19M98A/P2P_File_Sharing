@@ -14,13 +14,13 @@ messag=""
 
 def send(st):
     while True:
-        messag = input(name + " > ")
+        messag = input()
         str = name + ' > ' + messag
         st.send(str.encode())
 
 def receive(st):
     while True:
-        data = st.recv(1024).dicode()
+        data = st.recv(1024).decode()
         print(data)
 
 sendThread = threading.Thread(target = send, args = (s,))

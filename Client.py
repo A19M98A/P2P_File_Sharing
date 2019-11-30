@@ -20,7 +20,7 @@ def send(st):
 
 def receive(st):
     while True:
-        data = st.recv(1024).dicode()
+        data = st.recv(1024).decode()
         print(data)
 
 sendThread = threading.Thread(target = send, args = (s,))

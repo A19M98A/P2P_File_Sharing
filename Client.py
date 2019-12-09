@@ -14,7 +14,7 @@ messag=""
 
 def send(st):
     while True:
-        messag = input(name + " > ")
+        messag = input()
         str = name + ' > ' + messag
         st.send(str.encode())
 

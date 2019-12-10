@@ -16,13 +16,6 @@ def listen(clientsocket):
         print (data)
 
 def Conect():
-    # host = input("Inter host IP : ")
-    # port = input("Inter port : ") 
-    host = '172.20.7.17'
-    port = '5006'
-    serversocket.bind((str(host), int(port)))
-    serversocket.listen(100)
-    print ('server started and listening')
     while 1:
         (clientsocket, address) = serversocket.accept()
         data = clientsocket.recv(1024).decode()
@@ -35,7 +28,7 @@ def Conect():
 def CList():
     # print(clients)
     for c in clients:
-        print(c + ' : ' + str(clients[c].getpeername()) + '\n----------\n')
+        print(c + ' : ' + str(clients[c].getpeername()) + '\n----------')
 
 def FList():
     pass
@@ -46,6 +39,11 @@ print('2> Client')
 a = input('> ')
 
 if a == '1':
+    host = input("Inter host IP : ")
+    port = input("Inter port : ") 
+    serversocket.bind((str(host), int(port)))
+    serversocket.listen(100)
+    print ('server started and listening')
     processThread = threading.Thread(target = Conect)
     processThread.start()
     input('continu')

@@ -3,17 +3,33 @@ import signal
 import sys
 import threading
 import getpass
+import os
 from os import system, name 
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 clients = dict()
 tr = []
-
 def listen(clientsocket):
+    i = 1
     while True:
-        data = clientsocket.recv(1024).decode()
-        print (data)
+        data = clientsocket.recv(1048576).decode()
+        if data == 'upload':
+            print('Donload start')
+            f = open("temp.mp4",'wb')
+            i += 1
+            l = clientsocket.recv(1048576)
+            p = 1
+            while (str(l[-3:len(l)]) != "b'end'"):
+                f.write(l)
+                l = clientsocket.recv(1048576)
+                p += 1
+            f.write(l[0:-4])
+            f.close()
+            statinfo = os.stat("temp.mp4")
+            size = statinfo.st_size
+            
+            print('Donload finish')
 
 def Conect():
     while 1:
@@ -32,6 +48,13 @@ def CList():
 
 def FList():
     pass
+
+def SFile(DClient, file):
+    f = open (file, "rb")
+    l = f.read(1024)
+    while (l):
+        s.send(l)
+        l = f.read(1024)
 
 print('1> Server')
 print('2> Client')

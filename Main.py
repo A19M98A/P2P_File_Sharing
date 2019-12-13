@@ -4,7 +4,15 @@ import sys
 import threading
 import getpass
 import os
-from os import system, name 
+from os import system, name
+import subprocess as sp
+
+def signal_handler(sig, frame):
+    serversocket.close()
+    print('You pressed Ctrl+C!')
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -49,12 +57,23 @@ def CList():
 def FList():
     pass
 
-def SFile(DClient, file):
-    f = open (file, "rb")
-    l = f.read(1024)
-    while (l):
-        s.send(l)
-        l = f.read(1024)
+def SFile(DClient, file, name):
+    while True:
+        m = 'upload ' + name
+        DClient.send(m.encode())
+        f = open (file, "rb")
+        statinfo = os.stat(file)
+        size = statinfo.st_size
+        print(size)
+        l = f.read(1048576)
+        p = 1
+        while (l):
+            DClient.send(l)
+            l = f.read(1048576)
+            p += 1
+            # s.send('end'.encode())
+        # print(l)
+        DClient.send('end'.encode())
 
 print('1> Server')
 print('2> Client')
@@ -62,7 +81,12 @@ print('2> Client')
 a = input('> ')
 
 if a == '1':
-    host = input("Inter host IP : ")
+    status, result = sp.getstatusoutput('ifconfig | grep "inet " | grep -v 127.0.0.1[2]')
+    result = result.split(' ')
+    host = result[len(result) - 5]
+    inputhost = input('ip address (difalt "' + host + '): ')
+    if inputhost != '':
+        host = inputhost
     port = input("Inter port : ") 
     serversocket.bind((str(host), int(port)))
     serversocket.listen(100)
@@ -83,4 +107,21 @@ if a == '1':
             FList()
         input('continu')
 elif a == '2':
-    pass
+    host = input("IP of server : ")
+    port = input("port of server : ")
+    name = input("your name : ")
+
+    serversocket.connect((str(host),int(port)))
+    serversocket.send((name + " connected").encode())
+    print('connected')
+    while 1:
+        system('clear')
+        print('1> Upload file')
+        print('2> Download file\n')
+        s = input('> ')
+
+        if s == '1':
+            pass
+        elif s == '2':
+            pass
+        input('continu')

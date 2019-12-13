@@ -88,12 +88,12 @@ def UploadFile():
     l = f.read(1048576)
     p = 1
     while (l):
-        s.send(l)
+        serversocket.send(l)
         l = f.read(1048576)
         p += 1
         # s.send('end'.encode())
     # print(l)
-    s.send('end'.encode())
+    serversocket.send('end'.encode())
 
 #////////////////////////////////////////////
 

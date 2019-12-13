@@ -18,6 +18,7 @@ serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 clients = dict()
 tr = []
+
 def listen(clientsocket):
     i = 1
     while True:
@@ -75,6 +76,27 @@ def SFile(DClient, file, name):
         # print(l)
         DClient.send('end'.encode())
 
+def UploadFile():
+    messag = input('File: ')
+    m = 'upload' #name + ' > ' + messag
+    serversocket.send(m.encode())
+    file = messag
+    f = open (file, "rb")
+    statinfo = os.stat(file)
+    size = statinfo.st_size
+    print(size)
+    l = f.read(1048576)
+    p = 1
+    while (l):
+        s.send(l)
+        l = f.read(1048576)
+        p += 1
+        # s.send('end'.encode())
+    # print(l)
+    s.send('end'.encode())
+
+#////////////////////////////////////////////
+
 print('1> Server')
 print('2> Client')
 
@@ -121,7 +143,7 @@ elif a == '2':
         s = input('> ')
 
         if s == '1':
-            pass
+            UploadFile()
         elif s == '2':
             pass
         input('continu')

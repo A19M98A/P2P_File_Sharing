@@ -13,7 +13,7 @@ tr = []
 def listen(clientsocket):
     i = 1
     while True:
-        data = clientsocket.recv(1048576).decode()
+        data = clientsocket.recv(1024).decode()
         if data == 'upload':
             print('Donload start')
             f = open("temp.mp4",'wb')
@@ -82,5 +82,5 @@ if a == '1':
         elif s == '2':
             FList()
         input('continu')
-else:
+elif a == '2':
     pass

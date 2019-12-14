@@ -17,6 +17,7 @@ signal.signal(signal.SIGINT, signal_handler)
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 clients = dict()
+files = dict()
 tr = []
 
 def listen(clientsocket):
@@ -24,6 +25,16 @@ def listen(clientsocket):
     while True:
         data = clientsocket.recv(1024).decode()
         if data == 'upload':
+            n = len(clients)
+            sfile = int(clientsocket.recv(1024).decode())
+            name = clientsocket.recv(1024).decode()
+            distenation = clientsocket
+            if sfile > 5242880:
+                for c in clients:
+                    if c != clientsocket:
+                        print(c)
+                        distenation = c
+                        break
             print('Donload start')
             f = open("temp.mp4",'wb')
             i += 1
@@ -37,7 +48,8 @@ def listen(clientsocket):
             f.close()
             statinfo = os.stat("temp.mp4")
             size = statinfo.st_size
-            
+            input('press any kay to continu...')
+            SFile(distenation, "temp.mp4", name)
             print('Donload finish')
 
 def Conect():
@@ -85,6 +97,9 @@ def UploadFile():
     statinfo = os.stat(file)
     size = statinfo.st_size
     print(size)
+    serversocket.send(str(size).encode())
+    name = input('name: ')
+    serversocket.send(name.encode())
     l = f.read(1048576)
     p = 1
     while (l):

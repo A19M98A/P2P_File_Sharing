@@ -48,8 +48,7 @@ def listen(clientsocket):
             f.close()
             statinfo = os.stat("temp.mp4")
             size = statinfo.st_size
-            input('press any kay to continu...')
-            SFile(distenation, "temp.mp4", name)
+            # SFile(distenation, "temp.mp4", name)
             print('Donload finish')
 
 def Conect():

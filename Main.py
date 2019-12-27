@@ -106,6 +106,7 @@ def UploadFile():
     serversocket.send(str(size).encode())
     name = input('name: ')
     serversocket.send(name.encode())
+    print(serversocket.recv().decode())
     l = f.read(1048576)
     p = 1
     while (l):

@@ -6,6 +6,7 @@ import getpass
 import os
 from os import system, name
 import subprocess as sp
+import queue
 
 def signal_handler(sig, frame):
     serversocket.close()
@@ -19,6 +20,7 @@ serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 clients = dict()
 files = dict()
 tr = []
+lfile = list()
 
 def listen(clientsocket):
     i = 1
@@ -29,6 +31,9 @@ def listen(clientsocket):
             sfile = int(clientsocket.recv(1024).decode())
             name = clientsocket.recv(1024).decode()
             distenation = clientsocket
+            qq = queue.Queue()
+            temp = [name, sfile, n, qq]
+            lfile.append()
             if sfile > 5242880:
                 for c in clients:
                     if c != clientsocket:

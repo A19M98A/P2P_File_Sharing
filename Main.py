@@ -19,6 +19,7 @@ serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 clients = dict()
 files = dict()
+DC = dict()
 tr = []
 lfile = list()
 
@@ -28,18 +29,16 @@ def listen(clientsocket):
         data = clientsocket.recv(1024).decode()
         if data == 'upload':
             n = len(clients)
-            sfile = int(clientsocket.recv(1024).decode())
-            name = clientsocket.recv(1024).decode()
+            dd = clientsocket.recv(1024)
+            print(str(dd)[2:-1])
+            sfile = int(str(dd)[2:-1])
+            name = str(clientsocket.recv(1024))[2:-1]
             distenation = clientsocket
             qq = queue.Queue()
             temp = [name, sfile, n, qq]
-            lfile.append()
-            if sfile > 5242880:
-                for c in clients:
-                    if c != clientsocket:
-                        print(c)
-                        distenation = c
-                        break
+            files[name] = sfile
+            lfile.append(temp)
+            clientsocket.send('OK'.encode())
             print('Donload start')
             f = open("temp.mp4",'wb')
             i += 1
@@ -72,7 +71,9 @@ def CList():
         print(c + ' : ' + str(clients[c].getpeername()) + '\n----------')
 
 def FList():
-    pass
+    for f in lfile:
+        print(f)
+        print('----------')
 
 def SFile(DClient, file, name):
     while True:
@@ -84,6 +85,7 @@ def SFile(DClient, file, name):
         print(size)
         l = f.read(1048576)
         p = 1
+        print(DClient.recv(1024).decode())
         while (l):
             DClient.send(l)
             l = f.read(1048576)

@@ -39,6 +39,8 @@ def listen(clientsocket):
             files[name] = sfile
             lfile.append(temp)
             clientsocket.send('OK'.encode())
+            if sfile < 1048576 * 10:
+                dist = clients[findMin(clientsocket)]
             print('Donload start')
             f = open("temp.mp4",'wb')
             i += 1
@@ -55,12 +57,23 @@ def listen(clientsocket):
             # SFile(distenation, "temp.mp4", name)
             print('Donload finish')
 
+def findMin(cd):
+    min = 10000
+    dmin = ''
+    for c in DC:
+        if cd != c:
+            if DC[c] < min:
+                dmin = c
+                min = DC[c]
+    return dmin
+
 def Conect():
     while 1:
         (clientsocket, address) = serversocket.accept()
         data = clientsocket.recv(1024).decode()
         print (data)
         clients[data.split(' ')[0]] = clientsocket
+        DC[data.split(' ')[0]] = 0
         processThread = threading.Thread(target = listen, args = (clientsocket,))
         tr.append(processThread)
         processThread.start()

@@ -35,14 +35,10 @@ def listen(clientsocket):
             name = str(clientsocket.recv(1024))[2:-1]
             distenation = clientsocket
             qq = queue.Queue()
-            temp = [name, sfile, n, qq]
             files[name] = sfile
             clientsocket.send('OK'.encode())
             
-            
             print('Donload start')
-            f = open("temp.mp4",'wb')
-            i += 1
             l = clientsocket.recv(1048576)
             p = 1
             while (str(l[-3:len(l)]) != "b'end'"):
@@ -50,14 +46,13 @@ def listen(clientsocket):
                 print('part ' + str(p) + ' send to ' + str(d))
                 qq.put(d)
                 n += 1
-                f.write(l)
                 l = clientsocket.recv(1048576)
+
+                # clients[d].send(l)
+
                 p += 1
-            f.write(l[0:-4])
-            f.close()
-            statinfo = os.stat("temp.mp4")
-            size = statinfo.st_size
-            # SFile(distenation, "temp.mp4", name)
+                
+            temp = [name, sfile, n, qq]
             lfile.append(temp)
             print('Donload finish')
 

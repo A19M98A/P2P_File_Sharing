@@ -28,7 +28,7 @@ def listen(clientsocket):
     while True:
         data = clientsocket.recv(1024).decode()
         if data == 'upload':
-            n = len(clients)
+            n = 0
             dd = clientsocket.recv(1024)
             print(str(dd)[2:-1])
             sfile = int(str(dd)[2:-1])
@@ -37,16 +37,19 @@ def listen(clientsocket):
             qq = queue.Queue()
             temp = [name, sfile, n, qq]
             files[name] = sfile
-            lfile.append(temp)
             clientsocket.send('OK'.encode())
-            if sfile < 1048576 * 10:
-                dist = clients[findMin(clientsocket)]
+            
+            
             print('Donload start')
             f = open("temp.mp4",'wb')
             i += 1
             l = clientsocket.recv(1048576)
             p = 1
             while (str(l[-3:len(l)]) != "b'end'"):
+                d = findMin(clientsocket)
+                print('part ' + str(p) + ' send to ' + str(d))
+                qq.put(d)
+                n += 1
                 f.write(l)
                 l = clientsocket.recv(1048576)
                 p += 1
@@ -55,16 +58,20 @@ def listen(clientsocket):
             statinfo = os.stat("temp.mp4")
             size = statinfo.st_size
             # SFile(distenation, "temp.mp4", name)
+            lfile.append(temp)
             print('Donload finish')
 
 def findMin(cd):
     min = 10000
     dmin = ''
+    print(DC)
     for c in DC:
         if cd != c:
             if DC[c] < min:
+                print(dmin)
                 dmin = c
                 min = DC[c]
+    DC[dmin] += 1
     return dmin
 
 def Conect():
@@ -86,6 +93,11 @@ def CList():
 def FList():
     for f in lfile:
         print(f)
+        d = f[3]
+        for i in range(d.qsize()):
+            dd = d.get()
+            d.put(dd)
+            print(dd)
         print('----------')
 
 def SFile(DClient, file, name):

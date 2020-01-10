@@ -1,3 +1,17 @@
+##########################################
+#    ______                ______        #
+#   /\  _  \  /'\_/`\     /\  _  \       #
+#   \ \ \L\ \/\      \    \ \ \L\ \      #
+#    \ \  __ \ \ \__\ \    \ \  __ \     #
+#     \ \ \/\ \ \ \_/\ \  __\ \ \/\ \    #
+#      \ \_\ \_\ \_\\ \_\/\_\\ \_\ \_\   #
+#       \/_/\/_/\/_/ \/_/\/_/ \/_/\/_/   #
+#                                        #
+#    BLOCKCHAIN py python3 (Jan 2020)    #
+#                                        #
+##########################################
+
+
 import socket
 import signal
 import sys
@@ -8,6 +22,7 @@ from os import system, name
 import subprocess as sp
 import queue
 
+# contorol for close socket py Ctrl + C key
 def signal_handler(sig, frame):
     serversocket.close()
     print('You pressed Ctrl+C!')
@@ -17,12 +32,14 @@ signal.signal(signal.SIGINT, signal_handler)
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+#defin data structer for save data of client and file
 clients = dict()
 files = dict()
 DC = dict()
 tr = []
 lfile = list()
 
+#listen for client data send for upload and download
 def listen(clientsocket):
     i = 1
     while True:
@@ -42,6 +59,7 @@ def listen(clientsocket):
             l = clientsocket.recv(1048576)
             p = 1
             while (str(l[-3:len(l)]) != "b'end'"):
+                #send data to best client
                 d = findMin(clientsocket)
                 print('part ' + str(p) + ' send to ' + str(d))
                 qq.put(d)
@@ -56,6 +74,7 @@ def listen(clientsocket):
             lfile.append(temp)
             print('Donload finish')
 
+#find minimom client
 def findMin(cd):
     min = 10000
     dmin = ''
@@ -69,6 +88,7 @@ def findMin(cd):
     DC[dmin] += 1
     return dmin
 
+#listen to new client and make thread for paraller work
 def Conect():
     while 1:
         (clientsocket, address) = serversocket.accept()
@@ -80,11 +100,13 @@ def Conect():
         tr.append(processThread)
         processThread.start()
 
+#print list of clients
 def CList():
     # print(clients)
     for c in clients:
         print(c + ' : ' + str(clients[c].getpeername()) + '\n----------')
 
+#print list of file and client that have that file
 def FList():
     for f in lfile:
         print(f)
@@ -95,25 +117,11 @@ def FList():
             print(dd)
         print('----------')
 
-def SFile(DClient, file, name):
-    while True:
-        m = 'upload ' + name
-        DClient.send(m.encode())
-        f = open (file, "rb")
-        statinfo = os.stat(file)
-        size = statinfo.st_size
-        print(size)
-        l = f.read(1048576)
-        p = 1
-        print(DClient.recv(1024).decode())
-        while (l):
-            DClient.send(l)
-            l = f.read(1048576)
-            p += 1
-            # s.send('end'.encode())
-        # print(l)
-        DClient.send('end'.encode())
+#send part of data to client
+def SFile(DClient, data, name):
+    pass
 
+#upload File: send file to server client
 def UploadFile():
     messag = input('File: ')
     m = 'upload' #name + ' > ' + messag
@@ -138,7 +146,7 @@ def UploadFile():
     serversocket.send('end'.encode())
 
 #////////////////////////////////////////////
-
+# make a menu for select what is ur rool
 print('1> Server')
 print('2> Client')
 

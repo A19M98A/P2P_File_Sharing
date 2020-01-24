@@ -21,6 +21,7 @@ import os
 from os import system, name
 import subprocess as sp
 import queue
+import time
 
 # contorol for close socket py Ctrl + C key
 def signal_handler(sig, frame):
@@ -38,11 +39,13 @@ files = dict()
 DC = dict()
 tr = []
 lfile = list()
+uploding = 0
 
 #listen for client data send for upload and download
 def listen(clientsocket):
     i = 1
     while True:
+        print('lesten for upload')
         data = clientsocket.recv(1024).decode()
         if data == 'upload':
             n = 0
@@ -66,7 +69,11 @@ def listen(clientsocket):
                 n += 1
                 l = clientsocket.recv(1048576)
 
-                # clients[d].send(l)
+                clients[d].send('send'.encode())
+                print(clients[d].recv(1024))
+                clients[d].send((name + "-" + str(p)).encode())
+                print(clients[d].recv(1024))
+                clients[d].send(l)
 
                 p += 1
                 
@@ -78,9 +85,8 @@ def listen(clientsocket):
 def findMin(cd):
     min = 10000
     dmin = ''
-    print(DC)
     for c in DC:
-        if cd != c:
+        if cd != clients[c]:
             if DC[c] < min:
                 print(dmin)
                 dmin = c
@@ -123,6 +129,7 @@ def SFile(DClient, data, name):
 
 #upload File: send file to server client
 def UploadFile():
+    
     messag = input('File: ')
     m = 'upload' #name + ' > ' + messag
     serversocket.send(m.encode())
@@ -134,7 +141,7 @@ def UploadFile():
     serversocket.send(str(size).encode())
     name = input('name: ')
     serversocket.send(name.encode())
-    print(serversocket.recv(1024).decode())
+    # print(serversocket.recv(1024).decode())
     l = f.read(1048576)
     p = 1
     while (l):
@@ -144,6 +151,22 @@ def UploadFile():
         # s.send('end'.encode())
     # print(l)
     serversocket.send('end'.encode())
+    uploding = 0
+
+def recivefile():
+    print("lesten")
+    global uploding
+    while 1:
+        data = serversocket.recv(1024).decode()
+        if data == 'send':
+            serversocket.send('OK'.encode())
+            name = serversocket.recv(1024).decode()
+            serversocket.send('OK'.encode())
+            f = open(name + ".block",'wb')
+            l = serversocket.recv(1048576)
+            f.write(l)
+        print('<---->')
+        print(data)
 
 #////////////////////////////////////////////
 # make a menu for select what is ur rool
@@ -186,6 +209,10 @@ elif a == '2':
     serversocket.connect((str(host),int(port)))
     serversocket.send((name + " connected").encode())
     print('connected')
+
+    processThread = threading.Thread(target = recivefile)
+    processThread.start()
+    input('OK...')
     while 1:
         system('clear')
         print('1> Upload file')
@@ -193,7 +220,9 @@ elif a == '2':
         s = input('> ')
 
         if s == '1':
+            # processThread.
             UploadFile()
+            # processThread.start()
         elif s == '2':
             pass
         input('continu')

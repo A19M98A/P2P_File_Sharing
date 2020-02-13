@@ -22,6 +22,7 @@ from os import system, name
 import subprocess as sp
 import queue
 import time
+import multiprocessing
 
 # contorol for close socket py Ctrl + C key
 def signal_handler(sig, frame):
@@ -67,18 +68,28 @@ def listen(clientsocket):
                 print('part ' + str(p) + ' send to ' + str(d))
                 qq.put(d)
                 n += 1
-                l = clientsocket.recv(1048576)
 
                 clients[d].send('send'.encode())
-                print(clients[d].recv(1024))
+                time.sleep(2)
+                # print(clients[d].recv(1024).decode())
                 clients[d].send((name + "-" + str(p)).encode())
-                print(clients[d].recv(1024))
-                clients[d].send(l)
-
+                time.sleep(2)
+                # print(clients[d].recv(1024))
+                # clients[d].send(l)
+                time.sleep(2)
+                l = clientsocket.recv(1048576)
                 p += 1
                 
             temp = [name, sfile, n, qq]
             lfile.append(temp)
+
+            # for in in range(n):
+            #     clients[d].send('send'.encode())
+            #     print(clients[d].recv(1024))
+            #     clients[d].send((name + "-" + str(p)).encode())
+            #     print(clients[d].recv(1024))
+            #     clients[d].send(l)
+
             print('Donload finish')
 
 #find minimom client
@@ -130,10 +141,10 @@ def SFile(DClient, data, name):
 #upload File: send file to server client
 def UploadFile():
     
-    messag = input('File: ')
+    file =  input('File: ')
     m = 'upload' #name + ' > ' + messag
     serversocket.send(m.encode())
-    file = messag
+    
     f = open (file, "rb")
     statinfo = os.stat(file)
     size = statinfo.st_size
@@ -141,6 +152,7 @@ def UploadFile():
     serversocket.send(str(size).encode())
     name = input('name: ')
     serversocket.send(name.encode())
+    # print(serversocket.recv(1024))
     # print(serversocket.recv(1024).decode())
     l = f.read(1048576)
     p = 1
@@ -157,16 +169,19 @@ def recivefile():
     print("lesten")
     global uploding
     while 1:
-        data = serversocket.recv(1024).decode()
+        data = serversocket.recv(1024)
+        print(data.decode())
         if data == 'send':
-            serversocket.send('OK'.encode())
+            # serversocket.send('OK'.encode())
             name = serversocket.recv(1024).decode()
-            serversocket.send('OK'.encode())
+            print(name)
+        #     serversocket.send('OK'.encode())
             f = open(name + ".block",'wb')
-            l = serversocket.recv(1048576)
-            f.write(l)
-        print('<---->')
-        print(data)
+            # l = serversocket.recv(1048576)
+            f.write(name)
+            f.close()
+        # print('<---->')
+        # print(data)
 
 #////////////////////////////////////////////
 # make a menu for select what is ur rool
@@ -210,7 +225,7 @@ elif a == '2':
     serversocket.send((name + " connected").encode())
     print('connected')
 
-    processThread = threading.Thread(target = recivefile)
+    processThread = multiprocessing.Process(target = recivefile)
     processThread.start()
     input('OK...')
     while 1:
@@ -220,9 +235,10 @@ elif a == '2':
         s = input('> ')
 
         if s == '1':
-            # processThread.
+            processThread.terminate()
             UploadFile()
-            # processThread.start()
+            processThread = multiprocessing.Process(target = recivefile)
+            processThread.start()
         elif s == '2':
             pass
         input('continu')

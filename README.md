@@ -1,6 +1,6 @@
 ## P2P File Sharing
 
-this is a test for block chain app.
+this is a test for P2P File Sharing app.
 
 # TODO
 
